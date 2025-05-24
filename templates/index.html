@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gurudev Sri Sri Ravi Shankar's AI reflection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #f8f9fa;
+            --text: #333;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        .book-cover {
+            display: block;
+            margin: 0 auto 20px;
+            width: 150px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .qa-container {
+            max-height: 500px;
+            overflow-y: auto;
+            margin: 20px 0;
+            padding-right: 10px;
+        }
+        .qa-tile {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .question {
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .answer {
+            white-space: pre-wrap;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        #question {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #777;
+        }
+        .counter {
+            font-weight: 500;
+        }
+        .save-btn {
+            background: #28a745;
+            margin-left: 10px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .input-area {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+
+        .gurudev-image {
+        display: block;
+        margin: 0 auto 20px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gurudev Sri Sri Ravi Shankar's AI Reflection</h1>
+        <img src="https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img,w_400,h_454/https://gurudevinchicago.com/wp-content/uploads/2022/05/Untitled-design-6-400x454.png" alt="Gurudev Sri Sri Ravi Shankar" class="gurudev-image">
+        
+        <div class="qa-container" id="qaContainer">
+            <!-- Q&A tiles will appear here -->
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="question" placeholder="Ask your question, every question is treated as a new instance." autocomplete="off">
+            <button onclick="askQuestion()">Submit</button>
+        </div>
+        
+        <div class="footer">
+            <div class="counter">Questions: <span id="counter">0</span>/5</div>
+            <div>
+                <span>Answers are AI-generated inspirations from Gurudev's teachings.</span>
+                <button onclick="saveResponses()" class="save-btn">Save All</button>
+            </div>
+            <div class="credit">Developed by HL</div>
+        </div>
+    </div>
+
+    <script>
+        let questionCount = 0;
+        const qaContainer = document.getElementById('qaContainer');
+        const counter = document.getElementById('counter');
+        
+        function askQuestion() {
+            const questionInput = document.getElementById('question');
+            const question = questionInput.value.trim();
+            
+            if (!question || questionCount >= 5) return;
+            
+            questionInput.value = '';
+            addQuestionTile(question, "Thinking...");
+            
+            fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question })
+            })
+            .then(res => res.json())
+            .then(data => {
+                updateLastAnswer(data.response);
+                questionCount++;
+                counter.textContent = questionCount;
+                
+                if (questionCount >= 5) {
+                    document.getElementById('question').placeholder = "Daily limit reached";
+                }
+            })
+            .catch(err => {
+                updateLastAnswer("Error: " + err);
+            });
+        }
+        
+        function addQuestionTile(question, answer) {
+            const tile = document.createElement('div');
+            tile.className = 'qa-tile';
+            tile.innerHTML = `
+                <div class="question">Q: ${question}</div>
+                <div class="answer">${answer}</div>
+                <button class="delete-btn" onclick="deleteTile(this)">✕</button>
+            `;
+            qaContainer.prepend(tile);
+            return tile;
+        }
+
+        function updateLastAnswer(answer) {
+            const tiles = document.querySelectorAll('.qa-tile');
+            if (tiles.length > 0) {
+                tiles[0].querySelector('.answer').innerHTML = marked.parse(answer);
+            }
+        }
+        
+        function deleteTile(btn) {
+            btn.parentElement.remove();
+        }
+        
+        function saveResponses() {
+            let content = "Gurudev Sri Sri Ravi Shankar's AI Reflection\n\n";
+            document.querySelectorAll('.qa-tile').forEach(tile => {
+                content += `Question: ${tile.querySelector('.question').textContent.replace('Q: ', '')}\n`;
+                content += `Answer: ${tile.querySelector('.answer').textContent}\n\n`;
+            });
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Gurudev_Wisdom.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
