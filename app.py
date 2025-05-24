@@ -5,7 +5,9 @@ from datetime import datetime
 from openai import OpenAI
 import chromadb
 from chromadb.utils import embedding_functions
-from dotenv import load_dotenv
+from dotenv import load_dotenvimport os
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 app = Flask(__name__)
 CORS(app)
@@ -34,9 +36,10 @@ try:
 
     # Load ALL chunks with progress feedback
     with open("book_chunks.txt", "r") as file:
-        chunks = file.read().split("\n\n---CHUNK---\n\n")
+    chunks = [chunk for chunk in file.read().split("\n\n---CHUNK---\n\n") if chunk.strip()]
     
-    print(f"Loading {len(chunks)} chunks...")
+    print(f"Loaded {len(chunks)} chunks")  # Verify count
+    
     for i, chunk in enumerate(chunks):
         collection.add(documents=[chunk], ids=[str(i)])
         if i % 50 == 0:

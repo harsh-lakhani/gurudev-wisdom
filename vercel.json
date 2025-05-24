@@ -4,9 +4,9 @@
     {
       "src": "app.py",
       "use": "@vercel/python",
-      "config": { 
+      "config": {
         "maxLambdaSize": "15mb",
-        "includeFiles": ["templates/**", "book_chunks.txt", "usage.log"]
+        "includeFiles": ["templates/**"]
       }
     }
   ],
