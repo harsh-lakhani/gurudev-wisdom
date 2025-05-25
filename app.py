@@ -6,6 +6,12 @@ from openai import OpenAI
 from pinecone import Pinecone
 from dotenv import load_dotenv
 
+from flask import send_file
+
+@app.route('/usage-log')
+def get_usage_log():
+    return send_file('usage.log', as_attachment=True)
+
 app = Flask(__name__)
 CORS(app)
 

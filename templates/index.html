@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Gurudev Sri Sri Ravi Shankar's AI reflection</title>
+    <title>Gurudev Sri Sri Ravi Shankar's AI Reflection</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon using your uploaded image -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='gurudev.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -36,12 +38,19 @@
             margin-bottom: 10px;
             font-size: 2.2rem;
         }
-        .book-cover {
+        .gurudev-image-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .gurudev-image {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             display: block;
-            margin: 0 auto 20px;
-            width: 150px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .qa-container {
             max-height: 500px;
@@ -74,10 +83,17 @@
             cursor: pointer;
             font-size: 14px;
         }
+        .counter {
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
         .input-area {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 10px;
+            margin-bottom: 20px;
         }
         #question {
             flex: 1;
@@ -102,24 +118,38 @@
         }
         .footer {
             display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
             font-size: 13px;
             color: #777;
-        }
-        .counter {
-            font-weight: 500;
+            text-align: center;
         }
         .save-btn {
             background: #28a745;
-            margin-left: 10px;
+            margin: 10px 0 0 0;
+        }
+        .twitter-link {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #1da1f2;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .twitter-link:hover {
+            color: #155a8a;
+            text-decoration: underline;
         }
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
             }
             h1 {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
+            }
+            .gurudev-image {
+                width: 140px;
+                height: 140px;
             }
             .input-area {
                 flex-direction: column;
@@ -127,39 +157,37 @@
             button {
                 width: 100%;
             }
-
-        .gurudev-image {
-        display: block;
-        margin: 0 auto 20px;
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid white;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            .footer {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Gurudev Sri Sri Ravi Shankar's AI Reflection</h1>
-        <img src="https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img,w_400,h_454/https://gurudevinchicago.com/wp-content/uploads/2022/05/Untitled-design-6-400x454.png" alt="Gurudev Sri Sri Ravi Shankar" class="gurudev-image">
-        
-        <div class="qa-container" id="qaContainer">
-            <!-- Q&A tiles will appear here -->
+        <div class="gurudev-image-wrapper">
+            <img src="{{ url_for('static', filename='gurudev.png') }}" alt="Gurudev Sri Sri Ravi Shankar" class="gurudev-image">
         </div>
+        
+        <div class="counter">Questions: <span id="counter">0</span>/5</div>
         
         <div class="input-area">
             <input type="text" id="question" placeholder="Ask your question" autocomplete="off">
             <button onclick="askQuestion()">Submit</button>
         </div>
         
+        <div class="qa-container" id="qaContainer">
+            <!-- Q&A tiles will appear here -->
+        </div>
+        
         <div class="footer">
-            <div class="counter">Questions: <span id="counter">0</span>/5</div>
             <div>
-                <span>Answers are AI-generated inspirations from Gurudev's teachings. Developed by HL.</span>
-                <button onclick="saveResponses()" class="save-btn">Save All</button>
+                Answers are AI-generated inspirations from Gurudev's teachings.<br>
+                Developed by HL.
             </div>
+            <a href="https://x.com/harshslakhani" target="_blank" class="twitter-link">@harshslakhani</a>
+            <button onclick="saveResponses()" class="save-btn">Save All</button>
         </div>
     </div>
 
