@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 from openai import OpenAI
 from pinecone import Pinecone
-from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
 app = Flask(__name__)
@@ -18,9 +17,6 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index_name = "book-chunks"
 index = pc.Index(index_name)
-
-# Initialize embedding model
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
 def log_interaction(ip, question, response, usage):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -48,8 +44,12 @@ def ask():
     data = request.json
     question = data['question']
 
-    # Generate embedding for question
-    question_emb = embedder.encode(question).tolist()
+    # Generate embedding for question using OpenAI
+    embeddings_response = client.embeddings.create(
+        input=question,
+        model="text-embedding-ada-002"  # or "text-embedding-3-small" if you used that for upsert
+    )
+    question_emb = embeddings_response.data[0].embedding
 
     # Query Pinecone for top 2 matches
     results = index.query(vector=question_emb, top_k=2, include_metadata=True)
