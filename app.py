@@ -15,7 +15,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Initialize Pinecone client (new API)
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-index_name = "book-chunks"
+index_name = "book-chunks-openai"
 index = pc.Index(index_name)
 
 def log_interaction(ip, question, response, usage):
