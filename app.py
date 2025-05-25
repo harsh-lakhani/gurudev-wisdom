@@ -3,8 +3,8 @@ from flask_cors import CORS
 import os
 from datetime import datetime
 from openai import OpenAI
-import chromadb
-from chromadb.utils import embedding_functions
+from pinecone import Pinecone
+from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
 app = Flask(__name__)
@@ -14,25 +14,13 @@ CORS(app)
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Setup ChromaDB
-embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="all-MiniLM-L6-v2",
-    device="cpu"
-)
-chroma_client = chromadb.Client()
-collection = chroma_client.create_collection(
-    name="book_rag",
-    embedding_function=embedding_func
-)
+# Initialize Pinecone client (new API)
+pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+index_name = "book-chunks"
+index = pc.Index(index_name)
 
-# Load book chunks
-with open("book_chunks.txt", "r") as file:
-    chunks = file.read().split("\n\n---CHUNK---\n\n")
-for i, chunk in enumerate(chunks):
-    collection.add(documents=[chunk], ids=[str(i)])
-
-# Rate limiting storage
-question_counts = {}
+# Initialize embedding model
+embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
 def log_interaction(ip, question, response, usage):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -59,21 +47,15 @@ def ask():
     ip = request.remote_addr
     data = request.json
     question = data['question']
-    
-    # 5-question daily limit
-    date = datetime.now().strftime("%Y-%m-%d")
-    key = f"{ip}-{date}"
-    question_counts[key] = question_counts.get(key, 0) + 1
-    
-    if question_counts[key] > 5:
-        return jsonify({
-            "response": "Daily limit reached (5 questions). Please return tomorrow.",
-            "limit_reached": True
-        })
-    
-    # Get book context
-    results = collection.query(query_texts=[question], n_results=2)
-    context = "\n\n".join(results["documents"][0])
+
+    # Generate embedding for question
+    question_emb = embedder.encode(question).tolist()
+
+    # Query Pinecone for top 2 matches
+    results = index.query(vector=question_emb, top_k=2, include_metadata=True)
+
+    # Combine retrieved chunks as context
+    context = "\n\n".join([match["metadata"]["text"] for match in results["matches"]])
     
     # Generate response
     response = client.chat.completions.create(
@@ -93,8 +75,7 @@ def ask():
     log_interaction(ip, question, response.choices[0].message.content, response.usage)
     
     return jsonify({
-        "response": response.choices[0].message.content,
-        "questions_left": 5 - question_counts[key]
+        "response": response.choices[0].message.content
     })
 
 if __name__ == '__main__':

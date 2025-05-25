@@ -1,7 +1,7 @@
 Flask
 flask-cors
 openai
-chromadb
 python-dotenv
 sentence-transformers
 gunicorn
+pinecone
