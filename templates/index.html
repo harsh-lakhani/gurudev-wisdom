@@ -3,8 +3,6 @@
 <head>
     <title>Gurudev Sri Sri Ravi Shankar's AI Reflection</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Favicon using your uploaded image -->
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='gurudev.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -52,37 +50,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             display: block;
         }
-        .qa-container {
-            max-height: 500px;
-            overflow-y: auto;
-            margin: 20px 0;
-            padding-right: 10px;
-        }
-        .qa-tile {
-            background: var(--secondary);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            position: relative;
-        }
-        .question {
-            font-weight: 500;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-        .answer {
-            white-space: pre-wrap;
-        }
-        .delete-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 14px;
-        }
         .counter {
             font-weight: 500;
             text-align: center;
@@ -115,6 +82,37 @@
         button:hover {
             opacity: 0.9;
             transform: translateY(-1px);
+        }
+        .qa-container {
+            max-height: 500px;
+            overflow-y: auto;
+            margin: 20px 0;
+            padding-right: 10px;
+        }
+        .qa-tile {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .question {
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .answer {
+            white-space: pre-wrap;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 14px;
         }
         .footer {
             display: flex;
@@ -167,20 +165,20 @@
     <div class="container">
         <h1>Gurudev Sri Sri Ravi Shankar's AI Reflection</h1>
         <div class="gurudev-image-wrapper">
-            <img src="{{ url_for('static', filename='gurudev.png') }}" alt="Gurudev Sri Sri Ravi Shankar" class="gurudev-image">
+            <img src="https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img,w_400,h_454/https://gurudevinchicago.com/wp-content/uploads/2022/05/Untitled-design-6-400x454.png" alt="Gurudev Sri Sri Ravi Shankar" class="gurudev-image">
         </div>
-        
+
         <div class="counter">Questions: <span id="counter">0</span>/5</div>
-        
+
         <div class="input-area">
             <input type="text" id="question" placeholder="Ask your question" autocomplete="off">
             <button onclick="askQuestion()">Submit</button>
         </div>
-        
+
         <div class="qa-container" id="qaContainer">
             <!-- Q&A tiles will appear here -->
         </div>
-        
+
         <div class="footer">
             <div>
                 Answers are AI-generated inspirations from Gurudev's teachings.<br>
